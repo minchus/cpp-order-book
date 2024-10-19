@@ -16,19 +16,20 @@ include(cmake/variables.cmake)
 # ---- Declare library ----
 
 add_library(
-    cpp-order-book_lib INTERFACE
+    cpp-order-book_lib OBJECT
+        source/orderbook.cpp
 )
 
 target_include_directories(
     cpp-order-book_lib ${warning_guard}
-    INTERFACE
+    PUBLIC
     "\$<BUILD_INTERFACE:${PROJECT_SOURCE_DIR}/source>"
 )
 
-target_compile_features(cpp-order-book_lib INTERFACE cxx_std_20)
+target_compile_features(cpp-order-book_lib PUBLIC cxx_std_20)
 
 find_package(fmt REQUIRED)
-target_link_libraries(cpp-order-book_lib INTERFACE fmt::fmt)
+target_link_libraries(cpp-order-book_lib PRIVATE fmt::fmt)
 
 # ---- Declare executable ----
 

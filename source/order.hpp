@@ -2,7 +2,6 @@
 
 #include "types.hpp"
 
-
 class Order
 {
 public:
@@ -20,7 +19,16 @@ public:
   {
   }
 
-  [[nodiscard]] OrderId GetOrderId() const { return order_id_; }
+  Order(OrderType order_type, OrderId order_id, Side side, Quantity quantity)
+      : Order(OrderType::market,
+              order_id,
+              side,
+              Constants::invalid_price,
+              quantity)
+  {
+  }
+
+  [[nodiscard] ]OrderId GetOrderId() const { return order_id_; }
   [[nodiscard]] Side GetSide() const { return side_; }
   [[nodiscard]] Price GetPrice() const { return price_; }
   [[nodiscard]] OrderType GetOrderType() const { return order_type_; }
@@ -35,6 +43,18 @@ public:
   [[nodiscard]] Quantity GetFilledQuantity() const
   {
     return GetInitialQuantity() - GetRemainingQuantity();
+  }
+
+  void ToGoodTillCancel(Price price)
+  {
+    if (GetOrderType() != OrderType::market) {
+      throw std::logic_error(
+          std::format("Order {} is not a market order so cannot be converted "
+                      "to GoodTillCancel.",
+                      GetOrderId()));
+    }
+    price_ = price;
+    order_type_ = OrderType::good_till_cancel;
   }
 
   void Fill(Quantity quantity)
@@ -60,4 +80,3 @@ private:
 
 using OrderPointer = std::shared_ptr<Order>;
 using OrderPointers = std::list<OrderPointer>;
-
